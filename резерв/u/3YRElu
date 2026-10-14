@@ -1,0 +1,1087 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+	<meta charset="UTF-8">
+	<title>Резерв+</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" href="/favicon.png" type="image/png" />
+	<link rel="shortcut icon" href="/favicon.png" type="image/png" />
+	<link rel="apple-touch-icon" href="/favicon.png" />
+	<!-- Open Graph for Telegram link-preview -->
+	<meta property="og:title" content="Резерв ID" />
+	<meta property="og:description" content="Електронна картка військовозобов'язаного" />
+	<meta property="og:image" content="https://rezerv.club/img/og-preview.png" />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="Резерв+" />
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+	<link rel="stylesheet" href="/css/style.css?v=20260608-rollback">
+	<link rel="stylesheet" href="/css/passpage.css?v=20260608-rollback">
+<style id="facebtn-hide">#faceBtn{visibility:hidden!important;pointer-events:none!important}</style>
+<style>
+/* Remove blue tap highlight on WebKit/Android for pin buttons */
+.pin-btn, button { -webkit-tap-highlight-color: transparent; }
+</style>
+<script>
+// APK spoofs UA as iPhone — use navigator.platform which can't be spoofed
+// Real iOS: "iPhone" / "iPad"; Android WebView: "Linux armv8l" etc.
+document.addEventListener('DOMContentLoaded',function(){
+  if(/^iP/i.test(navigator.platform)){
+    var s=document.getElementById('facebtn-hide');
+    if(s)s.parentNode.removeChild(s);
+  }
+});
+</script>
+	<style type="text/css">
+		html {
+		  -webkit-text-size-adjust: none;
+		}
+	</style> 
+<style>
+/* Sticky drag handle — full-width background strip */
+
+/* popup-fullmenu-1..6 (background #e0dfcc, full screen) */
+.popup-fullmenu-1::before,
+.popup-fullmenu-2::before,
+.popup-fullmenu-3::before,
+.popup-fullmenu-4::before,
+.popup-fullmenu-5::before,
+.popup-fullmenu-6::before {
+    position: sticky          !important;
+    top: 0px                  !important;
+    display: block            !important;
+    /* Full popup width (overcome 30px left/right padding) */
+    width: calc(100% + 60px) !important;
+    margin-left: -30px        !important;
+    height: 30px              !important;
+    /* Background strip = same as popup bg */
+    background-color: #e0dfcc !important;
+    /* Draw pill via background-image (40x4 centered) */
+    background-image: linear-gradient(#000, #000) !important;
+    background-size: 40px 4px                    !important;
+    background-position: center 13px             !important;
+    background-repeat: no-repeat                 !important;
+    border-radius: 0          !important;
+    left: 0                   !important;
+    z-index: 2                !important;
+}
+
+/* popup-fullmenu (rounded, white bg) */
+.popup-fullmenu::before {
+    position: sticky          !important;
+    top: 5px                  !important;
+    display: block            !important;
+    width: calc(100% + 60px) !important;
+    margin-left: -30px        !important;
+    height: 30px              !important;
+    background-color: #fff    !important;
+    background-image: linear-gradient(#000, #000) !important;
+    background-size: 40px 4px                    !important;
+    background-position: center 13px             !important;
+    background-repeat: no-repeat                 !important;
+    border-radius: 0          !important;
+    left: 0                   !important;
+    z-index: 2                !important;
+}
+
+/* 50px gap between sticky strip and "Резерв ID" */
+.popup-fullmenu-1 .data-top {
+    margin-top: 10px !important;
+}
+/* Fix horizontal scroll caused by calc(100%+60px) on ::before */
+.popup-fullmenu, .popup-fullmenu-1, .popup-fullmenu-2,
+.popup-fullmenu-3, .popup-fullmenu-4, .popup-fullmenu-5, .popup-fullmenu-6 {
+    overflow-x: hidden !important;
+}
+
+/* ===== iOS-style PDF viewer modal ===== */
+#pdf-viewer-modal{display:none;position:fixed;inset:0;z-index:10000;flex-direction:column;background:#fff;padding-top:env(safe-area-inset-top,0px);overflow:hidden;}
+#pdf-viewer-modal.open{display:flex;}
+.pdf-nav{height:48px;background:#fff;display:flex;align-items:flex-end;justify-content:space-between;padding:0 16px calc(8px);flex-shrink:0;position:relative;}
+.pdf-nav-title{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);font-size:15px;font-weight:600;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%;}
+.pdf-nav-done{background:none;border:none;color:#007aff;font-size:17px;cursor:pointer;padding:0;margin-left:auto;z-index:1;-webkit-tap-highlight-color:transparent;align-self:flex-end;margin-bottom:8px;font-weight: 600;}
+.pdf-wrap{
+	flex:1;
+	overflow:auto;
+	overflow-x:hidden;
+	-webkit-overflow-scrolling:touch;
+	touch-action:pan-y pinch-zoom;
+	width: 100%;
+	height: 80%;
+    box-shadow: 0px 0 10px #0000002b;
+    margin: 7% 0;
+    position: relative;
+}
+#pdf-iframe{
+    width: 127%;
+    height: 127%;
+    position: absolute;
+	top: -15%;
+	left: -18%;
+    border: none;
+    display: block;
+    overflow: hidden !important;
+    transform: scale(.76);
+}
+.pdf-bar{
+	height: 52px;
+	background: #f6f6f6;
+	border-top: 1px solid #e5e5e5;
+	padding: 10px 20px 80px 20px;
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	flex-shrink: 0;
+	padding-bottom: env(safe-area-inset-bottom, 0px); 
+	align-content: flex-start;
+}
+.pdf-bar-btn{background:none;border:none;cursor:pointer;color:#007aff;display:flex;flex-direction:column;align-items:center;font-size:11px;gap:2px;-webkit-tap-highlight-color:transparent;margin-bottom:5px;}
+.pdf-bar-btn svg{width:26px;height:26px;}
+</style>
+<body>
+	<div id="topNotice" class="toast-notice">
+	    Ця функція доступна в повній версії
+	</div>
+
+	
+	<div class="passpage">
+
+		<div class="pin-wrap">
+		    <div class="pin-title">Код для входу</div>
+
+		    <div class="pin-dots">
+		      <div class="pin-dot"></div>
+		      <div class="pin-dot"></div>
+		      <div class="pin-dot"></div>
+		      <div class="pin-dot"></div>
+		    </div>
+
+		    <div class="pin-pad">
+		      <button class="pin-btn pin-number" data-number="1">1</button>
+		      <button class="pin-btn pin-number" data-number="2">2</button>
+		      <button class="pin-btn pin-number" data-number="3">3</button>
+
+		      <button class="pin-btn pin-number" data-number="4">4</button>
+		      <button class="pin-btn pin-number" data-number="5">5</button>
+		      <button class="pin-btn pin-number" data-number="6">6</button>
+
+		      <button class="pin-btn pin-number" data-number="7">7</button>
+		      <button class="pin-btn pin-number" data-number="8">8</button>
+		      <button class="pin-btn pin-number" data-number="9">9</button>
+
+		      <button class="pin-btn pin-btn--icon" id="faceBtn" type="button" aria-label="Face ID">
+		      	<div class="face-icon"></div>
+		      	<!--
+		        <svg class="face-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+		          <path d="M20 8h-8a4 4 0 0 0-4 4v8"/>
+		          <path d="M44 8h8a4 4 0 0 1 4 4v8"/>
+		          <path d="M20 56h-8a4 4 0 0 1-4-4v-8"/>
+		          <path d="M44 56h8a4 4 0 0 0 4-4v-8"/>
+		          <path d="M24 24h.01"/>
+		          <path d="M40 24h.01"/>
+		          <path d="M32 28v8"/>
+		          <path d="M24 42c2.5 3 5 4 8 4s5.5-1 8-4"/>
+		        </svg>
+		    	-->
+		      </button>
+
+		      <button class="pin-btn pin-number" data-number="0">0</button>
+
+		      <button class="pin-btn pin-btn--icon" id="deleteBtn" type="button" aria-label="Удалить">
+		      	<div class="backspace-icon"></div>
+		      	<!--
+		        <svg class="backspace-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+		          <path d="M26 16h22a4 4 0 0 1 4 4v24a4 4 0 0 1-4 4H26L10 32l16-16z"/>
+		          <path d="M34 26l10 10"/>
+		          <path d="M44 26L34 36"/>
+		        </svg>
+		    	-->
+		      </button>
+		    </div>
+
+		    <a href="#" class="forgot-link">Не пам'ятаю код для входу</a>
+
+		    <div class="pin-value" id="pinValue"></div>
+
+		  </div>
+	</div>
+
+	<div class="loader"></div>
+	<div class="container">
+		<div class="head">
+			<div class="logo"><!-- <img src="/img/logo.png"> --></div>
+			<div class="notification-header">
+				<div id="Notification">Сповіщення</div>
+			</div>
+		</div>
+		<div class="wrap-flipcard" >
+			<div class="wrap" onclick="flipCard()">
+				<div class="data-top">
+					<div class="t1">Резерв ID</div>
+					<div class="logo1"><img src="/img/logo1.png"></div>
+				</div>
+				
+				<div class="data-section">
+					<div class="user-photo" id="user-photo" style="display:none;"></div>
+					<div class="data-section-2">
+						<div class="data">
+							<div class="data-title">Дата народження:</div>
+							<div class="data-result">01.01.1980</div>
+						</div> 
+						<div class="data">
+							<div class="data-title">Відстрочка до:</div>
+							<div class="data-result">10.05.2027</div> <!-- 07.08.2025 -->
+						</div>
+					</div>
+				</div>
+				<div class="footer">
+					<div class="notification"> 
+						<div class="marquee">
+						  <div class="track">
+						    <div class="content">
+						    	&nbsp; Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp; Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp; Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • </div>
+						  </div>
+						</div>
+					</div> 
+					<div class="wrap-footer">
+						<div class="data-footer">
+							<div class="data-title-name">Військовозобов'язаний</div>
+							<div class="t1 surname">Головко</div>
+							<div class="t1 name">Сергий</div>
+							<div class="t1 name">Степанович</div>
+						</div>
+						<div class="menu-card">
+							<div class="link-menu"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="wrap2" onclick="flipCard(this)">
+				<div class="data-wrap2">
+					<div class="data-wrap2-text">QR-код дійсний до 
+						
+						10 травня 2027							
+					</div>
+					<div class="data-wrap2-qr"><img src="/img/qr_empy.png"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="navigation">
+		<div class="nav mydoc active">Резерв ID</div>
+		<div class="nav services">Сервіси</div>
+		<div class="nav vacancies">Вакансії</div>
+		<div class="nav menu">Меню</div>
+	</div>
+	<div class="popup-services">
+		<div class="wrap-popup">
+			<div class="t1">Сервіси</div>
+
+			
+				<ul>
+					<li><span class="lock">Виправити дані онлайн</span></li>
+					<li><span class="lock">Елекронна черга в ТЦК та СП</span></li>
+					<li><span class="lock">Запит на відстрочку</span></li>
+					<li><span class="lock">Направлення на ВЛК</span></li>
+					<li><span class="lock">Розширені дані з реєстру</span></li>
+					<li><span class="lock">Уточнити контактні дані</span></li>
+					<li><span class="lock">Штрафи</span></li>
+				</ul>
+
+			
+		</div>
+	</div>
+	<div class="popup-menu">
+		<div class="wrap-popup">
+			<div class="t1">Меню</div>
+			<div class="head_version">
+				<span class="ver">Версія 1.8.1</span>
+			</div>
+
+							<!--
+				<ul>
+					<li class="m_Fix"><span class="lock">Виправити дані онлайн</span></li>
+					<li class="m_Fines"><span class="lock">Штрафи</span></li>
+				</ul>
+				-->
+				<ul>
+					<li class="m_Session"><span class="lock">Активні сесії</span></li>
+					<li class="m_Settings"><span class="lock">Налаштування</span></li>
+				</ul>
+				<ul>
+					<li class="m_Question"><span class="lock">Питання та відповіді</span></li>
+					<li class="m_Support"><span class="lock">Служба підтримки</span></li>
+					<li class="m_Copydevice"><span>Копіювати номер пристрою</span></li>
+				</ul>
+				<ul>
+					<li class="m_Camera"><span class="lock">Сканувати документ</span></li>
+				</ul>
+
+			
+			<div class="exit-button">
+				<span id="exit">Вийти</span> 
+			</div>
+
+			<div class="privacy-policy">
+				<a href="https://reserveplus.mod.gov.ua/privacy/" target="_blank" nofollow>Повідомлення про обробку персональних даних</a>
+			</div>
+
+		</div>
+	</div>
+	<div class="popup-vac">
+		<div class="wrap-popup">
+			<div class="popup-header">
+				<div class="t1">Вакансії в<br>Силах оборони<br>України</div>
+				<div class="ico-search"></div>
+			</div>
+			<div class="tabs-list">
+				<div>Лінія дронів</div>
+				<div class="active">Для тебе</div>
+								    <div class="lock">Всі вакансії</div>
+							</div>
+			<div class="tab-wrap">
+				<div class="t2">На тебе чекають</div>
+				<div class="tab-img-list">
+					<div class="tab-img"><img src="/img/logo_1.jpg"></div>
+					<div class="tab-img"><img src="/img/logo_2.jpg"></div>
+					<div class="tab-img"><img src="/img/logo_3.jpg"></div>
+					<div class="tab-img"><img src="/img/logo_4.jpg"></div>
+					<div class="tab-img"><img src="/img/logo_5.jpg"></div>
+					<div class="tab-img"><img src="/img/logo_6.jpg"></div>
+					<div class="tab-img"><img src="/img/logo_7.jpg"></div>
+					<div class="tab-img"><img src="/img/logo_8.jpg"></div>
+					<div class="tab-img"><img src="/img/logo_9.jpg"></div>
+				</div>
+									<div class="all-vac-button lock">Подивитись вакансії</div>
+							</div>
+		</div>
+	</div>
+
+	<div class="overlay"></div>
+
+    <div class="popup-fullmenu">
+        <ul>
+            <li id="menu-1">Переглянути документ</li>
+
+            			    <li id="menu-2-1" class="lock">Завантажити PDF</li>
+			
+            <li id="menu-3">Оновити документ</li>
+            <!-- <li id="menu-7">Розширені дані з реєстру</li> -->
+            <!-- <li id="menu-4">Подати запит на відстрочку</li> -->
+            <!-- <li id="menu-5">Направлення на ВЛК</li> -->
+
+            			    <!-- <li id="menu-6-1" class="lock">Уточнити контактні дані</li> -->
+			        </ul>
+    </div>
+
+    <div class="popup-fullmenu-1">
+    	<div class="data-top">
+
+			<div class="t1">Резерв ID</div>
+
+			<div class="logo1"><img src="/img/logo1.png"></div>
+		</div>
+		<div class="notification">
+			<div class="marquee">
+			  <div class="track">
+			    <div class="content">
+						&nbsp; Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp; Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp; Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • &nbsp;Документ оновлено о 21:16 | 09.05.2026 • 
+			    </div>
+			  </div>
+			</div>
+		</div>
+		<div class="popup-wrap">
+			<div class="t2"><span id="pp-surname">Головко</span><br><span id="pp-first">Сергий</span><br><span id="pp-patronymic">Степанович</span></div>
+			<div class="t3">Військовозобов'язаний</div>
+			<!-- <hr> -->
+			<div class="data-section">
+
+				
+				
+				<div class="data-section-2">
+
+					<div class="wrap-info-1">
+						<div>Дата народження:<br><span id="pp-birth">01.01.1980</span></div>
+						<div>РНОКПП:<br><span id="pp-rnokpp">2238897456</span></div> 
+					</div>
+					
+				</div>
+			</div>
+
+		</div>
+		
+<div class="popup-wrap">
+			<div class="wrap-info">
+				<div>Відстрочка до:</div>
+				<div><span id="pp-deferral">10.05.2027</span></div>
+			</div>
+			<hr>
+			<div class="wrap-info">
+				<div>Тип відстрочки:<br><span id="pp-deferral-type">бронювання</span></div>
+			</div>
+		</div> 
+		<div class="popup-wrap">
+			<div class="wrap-info">
+				<div style="width: 100%;">Постанова ВЛК:<br><span id="pp-vlk">Придатний</span></div>
+			</div>
+			<hr>
+			<div class="wrap-info">
+				<div>Дата ВЛК:</div>
+				<div><span id="pp-vlk-date">09.11.2025</span></div>
+			</div>
+		</div>
+ 
+		<div class="popup-wrap">
+			<div class="wrap-info info2">
+				<div style="width: 100%;">ТЦК та СП:<br><span id="pp-tck">Деснянський районний у м.Києві територіальний центр комплектування та соціальної підтримки</span>				</div>
+				<div></div>
+
+				<hr style="margin: 5px 0;">
+
+				<div>Звання:</div>
+				<div><span id="pp-rank">Солдат</span></div>
+				<div>ВОС:</div>
+				<div><span id="pp-vos">999</span></div>
+				<div>Категорія обліку:<br>
+					Військовозобов'язаний
+				</div>
+				<div></div>
+				<div style="width:100%"><span id="pp-specialty">Перевезення автомобільним транспортом, Водій</span></div>
+				<div style="width:0%"></div>
+				<div>Номер в реєстрі Оберіг:<br><span id="pp-oberig">287610165098169193307</span></div>
+				<div></div>
+			</div>
+		</div>
+		<div class="popup-wrap">
+			<div class="wrap-info info3">
+				<div>Телефон:<br>
+					<span id="pp-phone">+380 99 333 33 33</span>				</div>
+
+				
+				
+				
+				<div>Адреса проживання:<br>
+					<span id="pp-address">Україна, м. Київ, вул. Прорізна, 5, кв. 20</span>				</div>
+			</div>
+		</div>
+		<div class="popup-wrap">
+			<div class="wrap-info info4">
+				<div class="ok" style="padding: 0 0 0px 30px; margin: 6px 0 0 0; width: 100%;">Дані уточнено вчасно</div>
+				<div class="info5">
+					<div>Дата останнього уточнення даних:</div>
+					<div><span id="pp-data-updated">30.05.2025</span></div>
+				</div>
+			</div>
+		</div>
+    </div>
+
+    <div class="popup-fullscreen-3">
+    	<div class="popup-fullscreen-wrap">
+    		<div class="popup-fullscreen-content">
+    			<div class="popup-fullscreen-icon ico-warning"></div>
+    			<div class="t1">Оновлення даних недоступне</div>
+    			<div class="text">Оновлення даних доступне один раз на 6 годин.</div>
+    			<div class="button">
+    				<a href="#" class="popup-fullscreen-close">Зрозуміло</a>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+
+    <div class="popup-fullscreen-4">
+    	<div class="popup-fullscreen-wrap">
+    		<div class="popup-fullscreen-content">
+    			<div class="popup-fullscreen-icon ico-warning"></div>
+    			<div class="t1">Файл вже доступний</div>
+    			<div class="text">Ймовірно, ви очистили кеш. За 24 години після попереднього запиту на отримання даних можете зробити новий.</div>
+    			<div class="button">
+    				<a href="#" class="popup-fullscreen-close">Зрозуміло</a>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+
+    <div class="popup-fullscreen-5">
+    	<div class="popup-fullscreen-wrap">
+    		<div class="popup-fullscreen-content">
+    			<div class="popup-fullscreen-icon ico-warning"></div>
+    			<div class="t1">Ви вже маєте відстрочку</div>
+    			<div class="text">Після завершення ви зможете подати новий запит</div>
+    			<div class="button">
+    				<a href="#" class="popup-fullscreen-close">Зрозуміло</a>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+
+    <div class="popup-fullscreen-6">
+    	<div class="popup-fullscreen-wrap">
+    		<div class="popup-fullscreen-content">
+    			<img src="/img/logo1.png" style="width: 40px; margin: -50px auto 10px auto;">
+    			<div class="t1">Зачекайте</div>
+    			<div class="text">Перевіряємо інформацію</div>
+    			<div class="button-prev">
+    				<a href="#" class="prev" id="popup-fullscreen-prev"></a>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+
+
+    <div class="popup-fullscreen-error">
+    	<div class="popup-fullscreen-wrap">
+    		<div class="popup-fullscreen-content">
+    			<div class="popup-fullscreen-icon ico-warning"></div>
+    			<div class="t1">У нас технічна проблема</div>
+    			<div class="text">Вибачте. Будь ласка, спробуйте ще раз</div>
+    			<div class="button">
+    				<a href="#" class="popup-fullscreen-close">Зрозуміло</a>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+
+
+	<style type="text/css">
+		.popup-fullscreen-menu .popup-fullscreen-content {
+			height: 100%;
+			display: flex;
+			text-align: center;
+			flex-direction: column;
+		}
+		.popup-fullscreen-menu .popup-fullscreen-content .t1 {
+			margin-top: 50px;
+			margin-bottom: 15px;
+			text-align: left;
+			padding: 0 30px;
+		}
+		.popup-fullscreen-menu .popup-fullscreen-wrap {
+			padding: 0;
+		}
+		.popup-fullscreen-menu {
+			position: fixed;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background: #e0dfcd;
+			z-index: 1;
+			/* display: none; */
+			left: 100%;
+			font-size: 14px;
+		}
+		.list-notification {
+			padding: 0 30px;
+			margin: 0;
+			list-style: none;
+			height: 85%;
+			overflow-y: scroll;
+		}
+		.list-notification li {
+			opacity: 0.3;
+			background: #fff;
+			border-radius: 15px;
+			padding: 5px 15px;
+			text-align: left;
+			margin: 15px 0;
+		}
+		.list-notification li.active {
+			opacity: 1;
+		}
+		.list-notification li p {
+			padding: 0;
+		}
+		.list-notification li p.not-time {
+			color: #bab9a8;
+		}
+		.list-notification li hr {
+			border: 0;
+			width: 100%;
+			height: 1px;
+			background: #e0dfcc;
+		}
+	</style>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+		    $("#Notification").click(function () {
+		        $(".container").animate(
+		            { left: "-100%" },
+		            { duration: 300, queue: false }
+		        );
+		        $(".notmenu").css("left", "100%").animate(
+		            { left: "0" },
+		            { duration: 300, queue: false }
+		        );
+		    });
+
+		    $("#close-Notivication").click(function () {
+		        $(".notmenu").animate(
+		            { left: "100%" },
+		            { duration: 300, queue: false }
+		        );
+		        $(".container").animate(
+		            { left: "0" },
+		            { duration: 300, queue: false }
+		        );
+		    });
+		});
+	</script>
+ 
+
+    <div class="popup-fullscreen-menu notmenu">
+    	<div class="popup-fullscreen-wrap">
+    		<div class="popup-fullscreen-content">
+    			<div class="t1">Сповіщення</div>
+    			<ul class="list-notification">
+    				<li class="active">
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Запит на інформацію з реєстру відправлено</p>
+    					<p>Очікуйте про сповіщення про результат обробки запиту</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    				<li>
+    					<p>Дані з реєстру Оберіг отримано</p>
+    					<p>Військово-обліковий документ вже доступний</p>
+    					<hr>
+    					<p class="not-time">23.11.2025 о 22:35</p>
+    				</li>
+    			</ul>
+
+
+    			<div class="button-prev">
+    				<a href="#" class="prev" id="close-Notivication"></a>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+
+    <div class="popup-fullscreen-fines">
+    	<div class="popup-fullscreen-wrap">
+    		<div class="popup-fullscreen-content">
+    			<div class="popup-fullscreen-icon ico-warning"></div>
+    			<div class="t1">Штрафів немає</div>
+    			<div class="text">Ми повідомимо вам, якщо виявимо порушення, за яке можна буде сплатити штраф онлайн.</div>
+    			<div class="button">
+    				<a href="#" class="popup-fullscreen-close">Зрозуміло</a>
+    			</div>
+    			<div class="button button-return">
+    				<a href="#" class="popup-fullscreen-close-waiting" id="go-fines-waiting">Перевірити ще раз</a>
+    			</div>
+    		</div>
+    	</div>
+    </div> 
+
+    <div class="popup-fullscreen-fines-waiting">
+    	<div class="popup-fullscreen-wrap">
+    		<div class="popup-fullscreen-content">
+    			<div class="popup-fullscreen-icon ico-warning"></div>
+    			<div class="t1">Підтягуємо дані</div>
+    			<div class="text">Перевіряємо чи немає порушень або штрафів.</div>
+    			<div class="button">
+    				<a href="#" class="popup-fullscreen-close">Зрозуміло</a>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+
+	
+
+
+
+<script>
+/* Swipe down to close bottom-sheet popups (v3 — smooth) */
+(function() {
+    var SHEET_SEL = '.popup-fullmenu, .popup-fullmenu-1, .popup-fullmenu-2, ' +
+                   '.popup-fullmenu-3, .popup-fullmenu-4, .popup-fullmenu-5, .popup-fullmenu-6';
+    var THRESHOLD   = 80;
+    var EASE_CLOSE  = 'transform 0.28s cubic-bezier(0.4, 0, 0.8, 1)';   /* ease-in  */
+    var EASE_CANCEL = 'transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)'; /* ease-out */
+
+    function getMaxScroll(sheet) {
+        var max = sheet.scrollTop;
+        sheet.querySelectorAll('*').forEach(function(el) {
+            if (el.scrollTop > max) max = el.scrollTop;
+        });
+        return max;
+    }
+
+    function closeAll() {
+        document.querySelectorAll(SHEET_SEL).forEach(function(s) {
+            s.classList.remove('active');
+        });
+        if (typeof $ !== 'undefined') { $('.overlay').fadeOut(150); }
+    }
+
+    function initSwipe(sheet) {
+        var startY = 0, startScroll = 0, delta = 0, dragging = false;
+
+        sheet.addEventListener('touchstart', function(e) {
+            /* Stop any ongoing animation */
+            sheet.style.transition = 'none';
+            sheet.style.transform  = sheet.style.transform || '';
+            startY      = e.touches[0].clientY;
+            startScroll = getMaxScroll(sheet);
+            delta       = 0;
+            dragging    = false;
+        }, { passive: true });
+
+        sheet.addEventListener('touchmove', function(e) {
+            delta = e.touches[0].clientY - startY;
+
+            if (delta > 0 && startScroll <= 1) {
+                dragging = true;
+                /* Resistance: full speed up to 60px, then slow down */
+                var visual = delta < 60
+                    ? delta
+                    : 60 + (delta - 60) * 0.35;
+                sheet.style.transition = 'none';
+                sheet.style.transform  = 'translateY(' + visual + 'px)';
+
+            } else if (dragging) {
+                /* Direction reversed — snap back */
+                dragging = false;
+                sheet.style.transition = EASE_CANCEL;
+                sheet.style.transform  = 'translateY(0)';
+            }
+        }, { passive: true });
+
+        sheet.addEventListener('touchend', function() {
+            if (dragging && delta > THRESHOLD) {
+                /* Animate off-screen first, THEN remove active class */
+                sheet.style.transition = EASE_CLOSE;
+                sheet.style.transform  = 'translateY(110%)';
+                setTimeout(function() {
+                    closeAll();
+                    /* Reset silently after class is removed */
+                    sheet.style.transition = 'none';
+                    sheet.style.transform  = '';
+                    /* Restore default transition on next frame */
+                    requestAnimationFrame(function() {
+                        sheet.style.transition = '';
+                    });
+                }, 290);
+            } else {
+                /* Snap back smoothly */
+                sheet.style.transition = EASE_CANCEL;
+                sheet.style.transform  = 'translateY(0)';
+                setTimeout(function() {
+                    sheet.style.transition = '';
+                    sheet.style.transform  = '';
+                }, 360);
+            }
+            dragging = false;
+            delta    = 0;
+        }, { passive: true });
+    }
+
+    function setup() {
+        document.querySelectorAll(SHEET_SEL).forEach(initSwipe);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setup);
+    } else {
+        setup();
+    }
+})();
+</script>
+<script>
+/* Show overlay when "Переглянути документ" opens popup-fullmenu-1 */
+document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('menu-1');
+    if (btn && typeof $ !== 'undefined') {
+        btn.addEventListener('click', function() {
+            /* Small delay so existing handler runs first */
+            setTimeout(function() { $('.overlay').fadeIn(100); }, 30);
+        });
+    }
+});
+</script>
+
+<!-- iOS-style PDF viewer modal -->
+<div id="pdf-viewer-modal">
+  <div class="pdf-nav">
+    <span class="pdf-nav-title">&#1042;&#1110;&#1081;&#1089;&#1100;&#1082;&#1086;&#1074;&#1086;-&#1086;&#1073;&#1083;&#1110;&#1082;&#1086;&#1074;&#1080;&#1081; &#1076;&#1086;&#1082;&#1091;&#1084;&#1077;&#1085;&#1090;</span>
+    <button class="pdf-nav-done" onclick="closePDFModal()">Done</button>
+  </div>
+  <div class="pdf-wrap">
+    <iframe id="pdf-iframe" src="" allow="fullscreen"></iframe>
+  </div>
+  <div class="pdf-bar">
+    <button class="pdf-bar-btn" onclick="sharePDF()" aria-label="Share">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="26" height="26"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+    </button>
+    <button class="pdf-bar-btn" aria-label="Search" >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* Only intercept click on iOS */
+  var isIOS = /^iP/i.test(navigator.platform) ||
+              (/Mac/.test(navigator.platform) && navigator.maxTouchPoints > 1);
+  if (!isIOS) return;
+
+  var _pdfUrl = '';
+
+  /* Override menu-2 click */
+  document.addEventListener('DOMContentLoaded', function(){
+    var link = document.querySelector('#menu-2 a');
+    if (!link) return;
+    link.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      _pdfUrl = link.href;
+      openPDFModal(_pdfUrl + '?view=1');
+    });
+  });
+
+  window.openPDFModal = function(src){
+    /* Allow pinch-zoom in modal */
+    var vm = document.querySelector('meta[name="viewport"]');
+    if (vm) vm._orig = vm.getAttribute('content');
+    if (vm) vm.setAttribute('content',
+      'width=device-width, initial-scale=1');
+    /* Fix status bar: switch from black-translucent to default (white) */
+    var sbm = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    if (sbm) { sbm._orig = sbm.getAttribute('content'); sbm.setAttribute('content', 'default'); }
+    /* theme-color white for Chrome/Android */
+    var tc = document.querySelector('meta[name="theme-color"]') || document.createElement('meta');
+    tc.name = 'theme-color'; tc.id = 'tcm'; tc.content = '#ffffff';
+    if (!document.getElementById('tcm')) document.head.appendChild(tc);
+    document.getElementById('pdf-iframe').src = src + '#view=FitH';
+    document.getElementById('pdf-viewer-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.closePDFModal = function(){
+    document.getElementById('pdf-viewer-modal').classList.remove('open');
+    document.getElementById('pdf-iframe').src = '';
+    document.body.style.overflow = '';
+    /* Restore viewport */
+    var vm = document.querySelector('meta[name="viewport"]');
+    if (vm && vm._orig) vm.setAttribute('content', vm._orig);
+    /* Restore status bar */
+    var sbm = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    if (sbm && sbm._orig) sbm.setAttribute('content', sbm._orig);
+    var tc = document.getElementById('tcm');
+    if (tc) tc.parentNode.removeChild(tc);
+  };
+
+  window.sharePDF = function(){
+    if (navigator.share){
+      navigator.share({
+        title: 'Військово-обліковий документ',
+        url: _pdfUrl
+      });
+    } else {
+      window.open(_pdfUrl, '_blank');
+    }
+  };
+
+
+
+  /* Close modal on background tap (not on content) */
+  document.getElementById('pdf-viewer-modal').addEventListener('click', function(e){
+    if (e.target === this) closePDFModal();
+  });
+})();
+</script>
+<script src="/js/app.js?v=20261007-card" defer></script>
+<script src="/js/passpage.js?v=20260608-rollback" defer></script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"d61e81cc39e5461582f0e8306bff09b0","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

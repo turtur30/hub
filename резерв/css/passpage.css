@@ -1,0 +1,170 @@
+ .passpage {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 99;
+ }
+ .pin-wrap {
+	background: #dfdeca;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	color: #000;
+	z-index: 1;
+	left: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+}
+
+.pin-title {
+  font-size: 34px;
+  font-weight: 500;
+  margin: 80px 0 70px;
+}
+
+.pin-dots {
+	display: flex;
+	justify-content: center;
+	gap: 28px;
+	margin-bottom: 70px;
+	margin-top: 20px;
+}
+
+.pin-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.75);
+  transition: 0.2s ease;
+}
+
+.pin-dot.filled {
+  background: #000;
+  transform: scale(1.05);
+}
+
+.pin-pad {
+	width: 100%;
+	max-width: 300px;
+	gap: 17px 25px;
+	margin: 0 auto 55px;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	justify-items: center;
+}
+
+.pin-btn {
+	width: 84px;
+	height: 84px;
+	font-size: 30px;
+	font-weight: 600;
+	border: none;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.8);
+	font-size: 31px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 0.15s ease, background 0.15s ease;
+	user-select: none;
+	color: #000;
+}
+
+.pin-btn:hover {
+  transform: scale(1.04);
+  background: #fff;
+}
+
+.pin-btn:active {
+  transform: scale(0.97);
+}
+
+.pin-btn--icon,
+.pin-btn--empty {
+  background: transparent;
+  border-radius: 24px;
+}
+
+.pin-btn--icon:hover,
+.pin-btn--empty:hover {
+  background: transparent;
+  transform: none;
+}
+
+.backspace-icon {
+	background: url(../img/back_icon.png) center no-repeat;
+	background-size: contain;
+    width: 40px;
+    height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.face-icon {
+	background: url(../img/faceid_icon.png) center no-repeat;
+	background-size: contain;
+	width: 54px;
+	height: 54px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.forgot-link {
+	font-size: 16px;
+	color: #000;
+	margin-bottom: 70px;
+	text-decoration: none !important;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+.pin-value {
+  margin-top: 22px;
+  font-size: 14px;
+  color: #444;
+  word-break: break-all;
+  display: none !important;
+}
+
+@media (max-width: 480px) {
+  .pin-title {
+    font-size: 29px;
+    margin: 50px 0 50px;
+  }
+
+
+}
+
+
+
+
+
+#faceBtn.scanning .face-icon {
+  animation: pulseFace 0.7s infinite ease-in-out;
+}
+
+@keyframes pulseFace {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.passpage{
+display:none;
+}
